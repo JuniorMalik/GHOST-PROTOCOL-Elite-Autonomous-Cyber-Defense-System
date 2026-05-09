@@ -1,0 +1,47 @@
+services:
+  gateway:
+    build: ./services/gateway
+    ports:
+      - "${PORT_GATEWAY}:${PORT_GATEWAY}"
+    environment:
+      - REDIS_URL=${REDIS_URL}
+      - PORT=${PORT_GATEWAY}
+    depends_on:
+      - redis
+      - brain
+
+  brain:
+    build: ./services/brain
+    ports:
+      - "${PORT_BRAIN}:${PORT_BRAIN}"
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
+      - PORT=${PORT_BRAIN}
+    depends_on:
+      - postgres
+      - redis
+
+  dashboard:
+    build: ./services/dashboard
+    ports:
+      - "${PORT_DASHBOARD}:${PORT_DASHBOARD}"
+    environment:
+      - NEXT_PUBLIC_GATEWAY_URL=http://localhost:${PORT_GATEWAY}
+    depends_on:
+      - gateway
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  postgres:
+    image: postgres:alpine
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ghost_protocol
+    ports:
+      - "5432:5432"

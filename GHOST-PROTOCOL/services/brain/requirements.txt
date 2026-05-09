@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+google-generativeai
+redis
+python-dotenv
+psycopg2-binary
+sqlalchemy
+pydantic
+httpx
